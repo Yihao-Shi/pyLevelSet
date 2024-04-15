@@ -1,7 +1,4 @@
 # pyLevelSet
-<<<<<<< HEAD
-A Python-based package for generating level-set particles
-=======
 
 ![Github License](https://img.shields.io/github/license/Yihao-Shi/pyLevelSet)          ![Github stars](https://img.shields.io/github/stars/Yihao-Shi/pyLevelSet)          ![Github forks](https://img.shields.io/github/forks/Yihao-Shi/pyLevelSet)         [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) 
 
@@ -52,4 +49,3 @@ The project is inspired by [sdf](https://github.com/fogleman/sdf). Besides, we d
 V0.1 (April 15, 2024)
 
 - First release pyLevelSet
->>>>>>> master
