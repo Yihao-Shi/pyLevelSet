@@ -1,0 +1,7 @@
+numpy
+scipy
+trimesh
+scikit-image
+rtree
+open3d
+matplotlib
