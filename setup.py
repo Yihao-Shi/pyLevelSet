@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
           name="pyLevelSet",
-          version="0.1.0",
+          version="0.2.0",
           author="Shi-YiHao",
           author_email="syh-1999@outlook.com",
           description="A Level-set particles generator",
@@ -23,7 +23,8 @@ setup(
                                'scikit-image',
                                'rtree',
                                'open3d',
-                               'matplotlib'
+                               'matplotlib',
+                               'pyevtk'
                            ],
           classifiers=[
                           'Programming Language :: Python :: 3.8',

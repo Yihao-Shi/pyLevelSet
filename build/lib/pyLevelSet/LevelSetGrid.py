@@ -28,6 +28,12 @@ class LocalGrid(object):
     def read_grid(self, space, extent=0):
         self.grid_space = space
         self.extent = extent
+
+    def clear(self):
+        self.gnum = np.zeros(3, dtype=np.int32)
+        self.gridSum = 0
+        self.distance_field = None
+        self.node_coord = None
     
     def set_distance_field(self, start_point, region_size, node_cood, distance_field, center_mass):
         self.start_point = start_point - center_mass

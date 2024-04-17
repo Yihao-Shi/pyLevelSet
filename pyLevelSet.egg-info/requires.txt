@@ -5,3 +5,4 @@ scikit-image
 rtree
 open3d
 matplotlib
+pyevtk

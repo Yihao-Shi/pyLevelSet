@@ -283,6 +283,12 @@ class BasicShape(object):
             self._inertia = np.array([inertia_xx, inertia_yy, inertia_zz])
         self._is_inertia = True
 
+    def _get_bounding_box(self):
+        box_center = self.mesh.bounding_box.transform[0:3, 3]
+        self._lower_bound = box_center -0.5 * self.mesh.bounding_box.extents
+        self._higher_bound = box_center + 0.5 * self.mesh.bounding_box.extents
+        self._is_bound = True
+
     def _get_volume(self):
         self._volume = self.mesh.volume
         self._is_volume = True
@@ -317,6 +323,7 @@ class BasicShape(object):
             default_axis = np.eye(3)
             rotation_matrix = transformation_matrix_coordinate_system(new_axis, default_axis)
             self.mesh.apply_transform(rotation_matrix)
+            self.generate_sdf()
 
     def split(self, iteration=1):
         if self.mesh is None:
@@ -324,8 +331,9 @@ class BasicShape(object):
         pass
 
     def generate_sdf(self):
-        self._estimate_bounding_box()
+        self._get_bounding_box()
         region_size = self.upper_bound - self.lower_bound
+        self.grid.clear()
         self.grid.set_grid(self.lower_bound, region_size)
         self.grid.build_node_coords()
         self.grid.generate_sdf(self(self.grid.node_coord).reshape(-1))
@@ -341,8 +349,9 @@ class BasicShape(object):
 
         # ball pivoting method
         distances = pcd.compute_nearest_neighbor_distance()
-        avg_dist = np.mean(distances)
-        meshs = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(pcd, o3d.utility.DoubleVector(np.linspace(avg_dist, 8*avg_dist, 4)))
+        min_dist = np.min(distances)
+        max_dist = np.max(distances)
+        meshs = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(pcd, o3d.utility.DoubleVector(np.linspace(0.2*min_dist, 8*max_dist, 8)))
         meshs.remove_degenerate_triangles()
         meshs.remove_duplicated_triangles()
         meshs.remove_duplicated_vertices()
@@ -539,8 +548,8 @@ class pointcloud(BasicShape):
         self.mesh = tm.Trimesh(vertices=np.asarray(meshs.vertices), faces=np.asarray(meshs.triangles))
 
     def generate(self, *args, **kwargs):
+        self.generate_sdf()
         self.mesh_operation()
-        self.grid.move(self.mesh.center_mass)
 
 
 class MeshBased(BasicShape):
@@ -548,15 +557,14 @@ class MeshBased(BasicShape):
         super().__init__(ray=False)
 
     def _estimate_bounding_box(self):
-        self._lower_bound = self.center -0.5 * self.mesh.bounding_box.extents
-        self._higher_bound = self.center + 0.5 * self.mesh.bounding_box.extents
-        self._is_bound = True
+        self._get_bounding_box()
     
     def side(self, p):
         p = self.transfer(p)
         return self.mesh.contains(p)
     
     def generate(self, *args, **kwargs):
+        self.generate_sdf()
         self.mesh_operation()
 
     def _normal(self, p):
@@ -571,7 +579,6 @@ class arbitrarily(MeshBased):
         self.grid = LocalGrid()
         self.grid.set_distance_field(np.array(start_point), np.array(region_size), 
                                      np.array(node_coordinate), np.array(distance_field), self.mesh.center_mass)
-        
 
 
 class polyhedron(MeshBased):

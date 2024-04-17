@@ -1,3 +1,7 @@
 build/
 dist/
 pyLevelSet.egg-info/
+examples/*.png
+examples/*.vtu
+examples/*.vtr
+examples/*.stl
